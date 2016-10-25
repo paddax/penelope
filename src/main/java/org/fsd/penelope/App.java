@@ -1,6 +1,7 @@
 package org.fsd.penelope;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,9 +15,10 @@ public class App
 	private static Process inspection;
 	private static FixtureType noFixture;
 	private static FixtureType cfFixture;
-	private static List<AbstractNode> nodes = new ArrayList<>();
+	private static List<INode> nodes = new ArrayList<>();
+    private static List<Transaction> transactions = new LinkedList<>();
 
-	public static void main( String[] args ) {
+    public static void main( String[] args ) {
     	ArrayList<Process> processes = new ArrayList<Process>();
     	edm = new Process("EDM");
     	ablation = new Process("Ablation");
@@ -30,13 +32,13 @@ public class App
     	PartType pt = new PartType("CF88", processes);
     	
     	FifoShelf shelf1 = new FifoShelf("Goods inward");
-    	shelf1.setPartCount(20);
+    	shelf1.setMaxPartCount(20);
     	shelf1.setIn(noFixture);
     	shelf1.setOut(noFixture);
     	nodes.add(shelf1);
     	
     	FifoShelf shelf2 = new FifoShelf("Before EDM");
-    	shelf2.setPartCount(2);
+    	shelf2.setMaxPartCount(2);
     	processes.clear();
     	processes.add(edm.create(EProcessState.COMPLETE));
     	shelf1.setReject(processes);
@@ -55,13 +57,13 @@ public class App
     	while(true) {
     		try {
 				Thread.sleep(1000);
-				for(AbstractNode node: nodes) {
-					if(node.getTransationState() == ETransactionState.IDLE) {
+				for(INode node: nodes) {
+					if(node.hasPartAvailable()) {
 						Part x = node.getHead();
-						for(AbstractNode node1: nodes) {
-                            if(node1.getTransationState() == ETransactionState.IDLE && node1 != node) {
+						for(INode node1: nodes) {
+                            if(node1.getTransactionState() == ETransactionState.IDLE && node1 != node) {
                                 if (node1.wants(x)) {
-
+                                    createTransaction(x, node, node1);
                                 }
                             }
 						}
@@ -72,9 +74,15 @@ public class App
     	}
     }
 
-	private static FifoShelf createEDM(String string) {
-    	FifoShelf mc = new FifoShelf("EDM1");
-    	mc.setPartCount(1);
+    private static void createTransaction(Part x, INode tx, INode rx) {
+        tx.setTransactionState(ETransactionState.OFFERING);
+        rx.setTransactionState(ETransactionState.OFFERED);
+        transactions.add(new Transaction(tx, rx, x));
+
+    }
+
+    private static INode createEDM(String name) {
+    	Machine mc = new Machine(name);
     	ArrayList<Process> processes = new ArrayList<Process>();
     	processes.add(edm.create(EProcessState.COMPLETE));
     	mc.setReject(processes);

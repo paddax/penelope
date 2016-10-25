@@ -2,7 +2,7 @@ package org.fsd.penelope;
 
 import java.util.*;
 
-public abstract class AbstractNode {
+public abstract class AbstractNode implements INode {
 	
 	private String name;
 	private PartType parttype;
@@ -14,15 +14,14 @@ public abstract class AbstractNode {
 	private Map<String, Process> reject = new LinkedHashMap<>();
 	private Map<String, Process> output = new LinkedHashMap<>();
 
-	private ETransactionState transationState = ETransactionState.IDLE;
-	private LinkedList<Part> parts;
+	private ETransactionState transactionState = ETransactionState.IDLE;
 
 	public AbstractNode(String name) {
 		this.name = name;
-		parts = new LinkedList<>();
 	}
 	
-	public PartType getParttype() {
+	@Override
+    public PartType getParttype() {
 		return parttype;
 	}
 
@@ -30,15 +29,13 @@ public abstract class AbstractNode {
 		this.parttype = parttype;
 	}
 
-	public int getPartCount() {
+	@Override
+    public int getMaxPartCount() {
 		return partCount;
 	}
 
-	public void setPartCount(int partCount) {
-		this.partCount = partCount;
-	}
-
-	public FixtureType getIn() {
+	@Override
+    public FixtureType getIn() {
 		return in;
 	}
 
@@ -46,7 +43,8 @@ public abstract class AbstractNode {
 		this.in = in;
 	}
 
-	public FixtureType getOut() {
+	@Override
+    public FixtureType getOut() {
 		return out;
 	}
 
@@ -54,19 +52,23 @@ public abstract class AbstractNode {
 		this.out = out;
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 
-	public Map<String, Process> accept() {
+	@Override
+    public Map<String, Process> accept() {
 		return Collections.unmodifiableMap(accept);
 	}
 
-	public Map<String, Process> reject() {
+	@Override
+    public Map<String, Process> reject() {
 		return Collections.unmodifiableMap(reject);
 	}
 	
-	public Map<String, Process> output() {
+	@Override
+    public Map<String, Process> output() {
 		return Collections.unmodifiableMap(output);
 	}
 	
@@ -91,40 +93,21 @@ public abstract class AbstractNode {
 		}
 	}
 	
-	public void addPart(Part part) {
-		parts.add(part);
-	}
-	
-	public Part getHead() {
-		return parts.getFirst();
-	}
-	
-	public Part removeHead() {
-		return parts.removeFirst();
+	@Override
+    public ETransactionState getTransactionState() {
+		return transactionState;
 	}
 
-	public ETransactionState getTransationState() {
-		return transationState;
-	}
-
-	public void setTransationState(ETransactionState transationState) {
-		this.transationState = transationState;
-	}
-
-	private EnumSet<EProcessState> intersection(EnumSet<EProcessState> s1, EnumSet<EProcessState> s2) {
-		EnumSet<EProcessState> result = EnumSet.noneOf(EProcessState.class);
-        s1.forEach(p->{
-            if(s2.contains(p))
-                result.add(p);
-        });
-        return result;
+	@Override
+    public void setTransactionState(ETransactionState transactionState) {
+		this.transactionState = transactionState;
 	}
 
 	private boolean includes(Map<String,Process> map, Collection<Process> list) {
-        for(Process p : list) {
-            Process inc = map.get(p.getName());
-            if(inc != null) {
-                if(intersection(inc.getState(), p.getState()) != null) {
+        for(Process listProcess : list) {
+            Process mapProcess = map.get(listProcess.getName());
+            if(mapProcess != null) {
+                if(!mapProcess.getState().union(listProcess.getState()).isEmpty()) {
                     return true;
                 }
             }
@@ -132,7 +115,9 @@ public abstract class AbstractNode {
         return false;
     }
 
+    @Override
     public boolean wants(Part x) {
         return includes(accept, x.getProcessList()) && !includes(reject, x.getProcessList());
     }
+
 }

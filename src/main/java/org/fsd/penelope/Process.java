@@ -6,54 +6,54 @@ import java.util.List;
 
 public class Process {
 
-	private EnumSet<EProcessState> state = EnumSet.of(EProcessState.VIRGIN);
+	private ProcessState state = new ProcessState(EProcessState.VIRGIN);
 	private String name;
 	
 	public Process(String n) {
-		this(n, EProcessState.VIRGIN);
+		this(n, new ProcessState(EProcessState.VIRGIN));
 	}
 	
-	public Process(String name, EProcessState s) {
+	public Process(String name, ProcessState s) {
 		this.name = name;
-		this.state = EnumSet.of(s);
+		this.state = new ProcessState(s);
+	}
+
+	public Process(String name, EnumSet<EProcessState> s) {
+		this.name = name;
+		state = new ProcessState(s);
 	}
 	
-	public EnumSet<EProcessState> getState() {
+	public ProcessState getState() {
 		return state;
 	}
-	
-	private void setState(EnumSet<EProcessState> state) {
-		this.state = state;
+
+	private void setState(ProcessState state) {
+		this.state = new ProcessState(state);
 	}
 	
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+
 	public Process create(EProcessState s) {
-		Process p = new Process(name);
-		p.state = EnumSet.of(s);
-		return p;
+		return new Process(name, new ProcessState(s));
 	}
 	
 	public Process createAll() {
-		Process p = new Process(name);
-		p.setState(EnumSet.allOf(EProcessState.class));
+		Process p = new Process(name, EnumSet.allOf(EProcessState.class));
 		return p;
 	}
 	
 	public Process createNone() {
 		Process p = new Process(name);
-		p.setState(EnumSet.noneOf(EProcessState.class));
+		p.setState(new ProcessState());
 		return p;
 	}
 	
 	public Process createNot(EProcessState s) {
 		Process p = new Process(name);
-		p.setState(EnumSet.complementOf(EnumSet.of(s)));
+		ProcessState ps = new ProcessState(s);
+		p.setState(ps.complement());
 		return p;
 	}
 	
