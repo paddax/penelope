@@ -1,10 +1,6 @@
 package org.fsd.penelope;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractNode {
 	
@@ -17,9 +13,10 @@ public abstract class AbstractNode {
 	private Map<String, Process> accept = new LinkedHashMap<>();
 	private Map<String, Process> reject = new LinkedHashMap<>();
 	private Map<String, Process> output = new LinkedHashMap<>();
-	
+
+	private ETransactionState transationState = ETransactionState.IDLE;
 	private LinkedList<Part> parts;
-	
+
 	public AbstractNode(String name) {
 		this.name = name;
 		parts = new LinkedList<>();
@@ -74,21 +71,21 @@ public abstract class AbstractNode {
 	}
 	
 	public void setAccept(List<Process> processes) {
-		this.accept = new LinkedHashMap<String,Process>();
+		this.accept = new LinkedHashMap<>();
 		for(Process p: processes) {
 			accept.put(p.getName(), p);
 		}
 	}
 	
 	public void setReject(List<Process> processes) {
-		this.reject = new LinkedHashMap<String,Process>();
+		this.reject = new LinkedHashMap<>();
 		for(Process p: processes) {
 			reject.put(p.getName(), p);
 		}
 	}
 	
 	public void setOutput(List<Process> processes) {
-		this.output = new LinkedHashMap<String,Process>();
+		this.output = new LinkedHashMap<>();
 		for(Process p: processes) {
 			output.put(p.getName(), p);
 		}
@@ -105,5 +102,37 @@ public abstract class AbstractNode {
 	public Part removeHead() {
 		return parts.removeFirst();
 	}
-	
+
+	public ETransactionState getTransationState() {
+		return transationState;
+	}
+
+	public void setTransationState(ETransactionState transationState) {
+		this.transationState = transationState;
+	}
+
+	private EnumSet<EProcessState> intersection(EnumSet<EProcessState> s1, EnumSet<EProcessState> s2) {
+		EnumSet<EProcessState> result = EnumSet.noneOf(EProcessState.class);
+        s1.forEach(p->{
+            if(s2.contains(p))
+                result.add(p);
+        });
+        return result;
+	}
+
+	private boolean includes(Map<String,Process> map, Collection<Process> list) {
+        for(Process p : list) {
+            Process inc = map.get(p.getName());
+            if(inc != null) {
+                if(intersection(inc.getState(), p.getState()) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean wants(Part x) {
+        return includes(accept, x.getProcessList()) && !includes(reject, x.getProcessList());
+    }
 }

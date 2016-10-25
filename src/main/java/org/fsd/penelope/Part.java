@@ -1,14 +1,12 @@
 package org.fsd.penelope;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Part {
 
 	private String name;
 	private Map<String,Process> processes;
-	
+
 	public Part(PartType type, String name) {
 		this.name = name;
 		this.processes = new LinkedHashMap<String, Process>();
@@ -22,4 +20,8 @@ public class Part {
 	public Map<String, Process> getProcesses() {
 		return processes;
 	}
+
+    public Collection<Process> getProcessList() {
+        return processes.values();
+    }
 }

@@ -47,16 +47,26 @@ public class App
     	for(int i= 1; i<=5; i++) {
     		nodes.add(createEDM("EDM" + i));
     	}
-    	
-    	shelf1.addPart(new Part(pt, "AAA1"));
-    	shelf1.addPart(new Part(pt, "AAA2"));
-    	shelf1.addPart(new Part(pt, "AAA3"));
-    	shelf1.addPart(new Part(pt, "AAA4"));
-    	shelf1.addPart(new Part(pt, "AAA5"));
-    	
+
+        for(int i= 1; i<=shelf1.getPartCount(); i++) {
+            shelf1.addPart(new Part(pt, "AAA" + i));
+        }
+
     	while(true) {
     		try {
 				Thread.sleep(1000);
+				for(AbstractNode node: nodes) {
+					if(node.getTransationState() == ETransactionState.IDLE) {
+						Part x = node.getHead();
+						for(AbstractNode node1: nodes) {
+                            if(node1.getTransationState() == ETransactionState.IDLE && node1 != node) {
+                                if (node1.wants(x)) {
+
+                                }
+                            }
+						}
+					}
+				}
 			} catch (InterruptedException e) {
 			}
     	}
