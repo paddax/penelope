@@ -35,13 +35,13 @@ public class Machine extends AbstractNode {
 
     @Override
     public List<Part> listParts() {
-        if(part != null)
+        if (part != null)
             return Arrays.asList(part);
         return new ArrayList<>();
     }
 
     @Override
     public int getPartCount() {
-        return part != null? 1: 0;
+        return part != null ? 1 : 0;
     }
 }
