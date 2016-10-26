@@ -107,7 +107,7 @@ public abstract class AbstractNode implements INode {
         for (Process listProcess : list) {
             Process mapProcess = map.get(listProcess.getName());
             if (mapProcess != null) {
-                if (!mapProcess.getState().union(listProcess.getState()).isEmpty()) {
+                if (!mapProcess.getState().intersection(listProcess.getState()).isEmpty()) {
                     return true;
                 }
             }

@@ -1,15 +1,12 @@
 package org.fsd.penelope;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  * Hello world!
@@ -23,9 +20,15 @@ public class App {
     private static List<INode> nodes = new ArrayList<>();
     private static List<Transaction> transactions = new LinkedList<>();
 
-    public static Predicate<INode> isAllowed(INode x) {
-        return p-> x != p && x.getTransactionState() == ETransactionState.IDLE;
+	/**
+	 * Determines if this node is a valid target for a source node
+	 * @param x
+	 * @return
+	 */
+    public static Predicate<INode> isValidTarget(INode x) {
+        return p-> x != p && x.getTransactionState() == ETransactionState.IDLE && p.wants(x.getHead());
     }
+
     public static void main(String[] args) {
         ArrayList<Process> processes = new ArrayList<Process>();
         edm = new Process("EDM");
@@ -54,35 +57,35 @@ public class App {
         shelf2.setOut(cfFixture);
         nodes.add(shelf2);
 
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 7; i++) {
             nodes.add(createEDM("EDM" + i));
         }
 
-        for (int i = 1; i <= shelf1.getPartCount(); i++) {
+        for (int i = 1; i <= shelf1.getMaxPartCount(); i++) {
             shelf1.addPart(new Part(pt, "AAA" + i));
         }
 
-        ArrayList<INode> result1 = new ArrayList<>();
+        ArrayList<String> list1 = new ArrayList<>();
+		List<String> unavailable = list1.stream()
+				.filter(e -> (list1.stream()
+						.filter(d -> d.equals(e))
+						.count())<1)
+				.collect(Collectors.toList());
+
         while (true) {
+
             for (INode node : nodes) {
-                if (node.hasPartAvailable()) {
-                    for (INode node1 : nodes) {
-                        if (node1.getTransactionState() == ETransactionState.IDLE && node1 != node) {
-                            if (node1.wants(node.getHead())) {
-                                result1.add(node1);
-                            }
-                        }
-                    }
-                }
+				if(node.hasPartAvailable() && node.getTransactionState() == ETransactionState.IDLE) {
+					List<INode> targets = nodes.stream()
+							.filter(isValidTarget(node))
+							.collect(Collectors.toList());
+					System.out.println("Length: " + targets.size());
+				}
             }
-            for (INode node : nodes) {
-                List<INode> result = nodes.stream()
-                        .filter(n -> n.hasPartAvailable())
-                        .filter(isAllowed(node))
-                        .filter(n -> n.wants(node.getHead()))
-                        .collect(Collectors.toList());
-            }
-            //createTransaction(x, node, node1);
+
+			long total = LongStream.range(1,10000000L).parallel().filter(x -> (x >> 1) * 2 == x).count();
+			System.out.println(total);
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -102,6 +105,9 @@ public class App {
         ArrayList<Process> processes = new ArrayList<Process>();
         processes.add(edm.create(EProcessState.COMPLETE));
         mc.setReject(processes);
+		processes.clear();
+		processes.add(edm.createNot(EProcessState.COMPLETE));
+		mc.setAccept(processes);
         processes.clear();
         processes.add(edm.createAll());
         mc.setOutput(processes);
