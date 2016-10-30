@@ -1,5 +1,7 @@
 package org.fsd.penelope;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +49,9 @@ public class App {
         shelf1.setIn(noFixture);
         shelf1.setOut(noFixture);
         nodes.add(shelf1);
+
+        Gson g = new Gson();
+        g.fromJson("", PartType.class);
 
         FifoShelf shelf2 = new FifoShelf("Before EDM");
         shelf2.setMaxPartCount(2);
