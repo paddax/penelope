@@ -15,4 +15,8 @@ public interface IF4Engine {
     void setFixtureTypes(List<FixtureType> fixtures);
     void setPartTypes(List<PartType> partTypes);
 
+    NodeUpdate ready(NodeRequest request);
+
+    NodeUpdate login(NodeRequest request);
+
 }

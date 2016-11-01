@@ -11,6 +11,12 @@ import java.util.Map;
 public interface INode {
 
     /**
+     * Unique ID of node
+     * @return
+     */
+    long getID();
+
+    /**
      * Part type thats used by this node
      *
      * @return Parttype of this node

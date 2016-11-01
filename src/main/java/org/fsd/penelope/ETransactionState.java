@@ -5,24 +5,26 @@ package org.fsd.penelope;
  */
 public enum ETransactionState {
     /**
-     * The node is not in any transition state
+     * The node is not in any transaction state
      */
     IDLE,
 
     /**
      * Is a receiving station and an offer is made
      */
-    OFFERED,
-
+    OFFER_RECEIVE,
+    ACCEPTED_RECEIVE,
+    TRANSIT_RECEIVE,
+    LOGIN_RECEIVE,
+    COMPLETE_RECEIVE,
     /**
      * Is a sending station and a transaction has been made
      */
-    OFFERING,
-
-    ACCEPTED,
+    OFFER_SEND,
+    ACCEPTED_SEND,
     LOGIN_SEND,
-    TRANSIT,
-    LOGIN_ARRIVE,
-    COMPLETE
+    TRANSIT_SEND,
+
+    COMPLETE_SEND
 
 }

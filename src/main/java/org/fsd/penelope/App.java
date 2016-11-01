@@ -99,8 +99,8 @@ public class App {
     }
 
     private static void createTransaction(Part x, INode tx, INode rx) {
-        tx.setTransactionState(ETransactionState.OFFERING);
-        rx.setTransactionState(ETransactionState.OFFERED);
+        tx.setTransactionState(ETransactionState.OFFER_SEND);
+        rx.setTransactionState(ETransactionState.OFFER_RECEIVE);
         transactions.add(new Transaction(tx, rx, x));
 
     }
