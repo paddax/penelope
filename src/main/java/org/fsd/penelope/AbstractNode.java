@@ -16,6 +16,10 @@ public abstract class AbstractNode implements INode {
 
     private ETransactionState transactionState = ETransactionState.IDLE;
 
+    public long getID() {
+        return 0;
+    }
+
     public AbstractNode(String name) {
         this.name = name;
     }
