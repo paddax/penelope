@@ -14,6 +14,12 @@ public interface IF4Engine {
     NodeUpdate nodeUpdate(NodeRequest request);
 
     NodeUpdate addPart(NodeRequest request);
+
+    /**
+     *
+     * @param request
+     * @return
+     */
     NodeUpdate removePart(NodeRequest request);
 
 

@@ -2,6 +2,9 @@ package com.winbro.penelope.data;
 
 import com.winbro.penelope.ETransactionState;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Peter Davis on 01/11/2016.
  */
@@ -23,13 +26,19 @@ public class NodeUpdate {
     }
 
     private long nodeId;
+    private long transactionId;
     private ETransactionState transactionState;
     private String partName;
     private String agent;
+    private Map<Integer,PartData> partMap = new HashMap<>();
 
     public NodeUpdate(ETransactionState state, NodeRequest request) {
         this.transactionState = state;
         this.setNodeId(request.getNodeId());
+    }
+
+    public NodeUpdate() {
+
     }
 
     public long getNodeId() {
@@ -64,4 +73,19 @@ public class NodeUpdate {
         this.agent = agent;
     }
 
+    public Map<Integer, PartData> getPartMap() {
+        return partMap;
+    }
+
+    public void setPartMap(Map<Integer, PartData> partMap) {
+        this.partMap = partMap;
+    }
+
+    public long getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(long transactionId) {
+        this.transactionId = transactionId;
+    }
 }
