@@ -2,11 +2,10 @@ package com.winbro.penelope;
 
 import com.winbro.penelope.data.NodeRequest;
 import com.winbro.penelope.data.NodeUpdate;
+import com.winbro.penelope.data.PartData;
 import com.winbro.penelope.engine.IF4Engine;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class FifoShelf extends AbstractNode {
 
@@ -23,7 +22,7 @@ public class FifoShelf extends AbstractNode {
     }
 
     @Override
-    public PartUpdate addPart(Part part) {
+    public void addPart(Part part) {
         parts.add(part);
         part.setLocation(this);
     }
@@ -32,6 +31,13 @@ public class FifoShelf extends AbstractNode {
     public void removePart(Part p) {
         parts.remove(p);
         p.setLocation(null);
+    }
+
+    @Override
+    public Map<Integer, PartData> buildPartMap() {
+        HashMap<Integer,PartData> result = new HashMap<>();
+        parts.forEach(p -> result.put(parts.indexOf(p), p.getPartData()));
+        return result;
     }
 
     @Override
@@ -64,12 +70,6 @@ public class FifoShelf extends AbstractNode {
         if(getTransaction() == null) {
             // forced to idle no error checking
             return new NodeUpdate(ETransactionState.IDLE, request);
-        }
-        if(request.getRequestTransaction() != this.getTransactionState()) {
-            // a state change is occuring
-
-            switch(getTransactionState()) {
-            }
         }
         return NodeUpdate.BOUNCE(request);
     }

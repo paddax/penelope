@@ -9,4 +9,12 @@ import com.winbro.penelope.PartType;
 public interface IF4Persistence {
 
     Part findPart(PartType parttype, String partName);
+
+    Part newPart(PartType parttype, String partName);
+
+    /**
+     * Called when data pertaining to the part has changed
+     * @param p
+     */
+    void updatePart(Part p);
 }

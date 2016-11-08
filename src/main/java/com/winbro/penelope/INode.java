@@ -2,6 +2,7 @@ package com.winbro.penelope;
 
 import com.winbro.penelope.data.NodeRequest;
 import com.winbro.penelope.data.NodeUpdate;
+import com.winbro.penelope.data.PartData;
 import com.winbro.penelope.engine.IF4Engine;
 
 import java.lang.*;
@@ -139,7 +140,13 @@ public interface INode {
     long getLastContact();
 
 
-    NodeUpdate addPart(Part p);
+    void addPart(Part p);
 
     void removePart(Part p);
+
+    /**
+     * Builds a map<Location,PartData> of parts,
+     * @return Map of parts belonging to this node
+     */
+    Map<Integer,PartData> buildPartMap();
 }
